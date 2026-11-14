@@ -1,0 +1,1 @@
+window.DAYBOOK = {"char":"Juan","updated":1794623733,"level":null,"played":null,"levelPlayed":null,"dayCount":0,"pastCount":0,"quests":0,"broken":0,"streak":0,"avgToTurnIn":null,"fastest":null,"xp":0,"xpPerHour":null,"perLevel":[],"milestones":[],"days":[]};

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Daybook</title>
+<style>
+  /* An old map: parchment, brown ink, a red X. */
+  :root {
+    --paper: #e9dcbc; --page: #f3e8cc; --ink: #3f2a12; --soft: #7a5f3c; --rule: #d9c69c; --margin: #9b2c1c;
+    --bad: #9b2c1c; --good: #3d6b2f; --line: #b99a66;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #1f1a12; --page: #2a2318; --ink: #ecdcbc; --soft: #b59d78; --rule: #3a3020; --margin: #d06a52;
+            --bad: #ff8f75; --good: #9fcf86; --line: #5a4a30; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.5 Georgia, "Times New Roman", serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 2.4rem; margin: 0; font-weight: normal; }
+  .sub { color: var(--soft); margin: 4px 0 24px; }
+  .totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 32px; }
+  .stat { background: var(--page); border: 1px solid var(--line); padding: 12px 14px; }
+  .stat b { display: block; font-size: 1.35rem; font-weight: normal; }
+  .stat span { color: var(--soft); font-size: .85rem; }
+  .entry { position: relative; background: var(--page); border: 1px solid var(--line); margin-bottom: 16px;
+           padding: 16px 16px 16px 44px; display: grid; grid-template-columns: 1fr auto; gap: 16px;
+           box-shadow: inset 0 0 0 4px var(--page), inset 0 0 0 5px var(--rule); }
+  /* the trail: a dotted line down the left edge, an X at each day */
+  .entry::before { content: ""; position: absolute; left: 24px; top: 0; bottom: 0; border-left: 2px dotted var(--soft); opacity: .6; }
+  .entry::after { content: "✕"; position: absolute; left: 17px; top: 16px; color: var(--margin); font-size: 1rem; line-height: 1; }
+  .past { color: var(--soft); }
+  .miles { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .miles span { color: var(--margin); border: 1px solid var(--line); padding: 1px 8px; font-size: .88rem; }
+  .milestones { background: var(--page); border: 1px solid var(--line); padding: 12px 16px; margin-bottom: 24px; }
+  .milestones h2 { margin: 0 0 6px; font-size: 1.15rem; font-weight: normal; }
+  .milestones ul { margin: 0; padding-left: 18px; }
+  .milestones li { margin: 2px 0; }
+  /* item quality colours, darkened to read on parchment */
+  .q0 { color: #6f6f6f; } .q1 { color: var(--ink); } .q2 { color: #1d7a0c; } .q3 { color: #0b5fb8; } .q4 { color: #7d2bbf; } .q5 { color: #b35a00; }
+  @media (prefers-color-scheme: dark) { .q2 { color: #4fe03a; } .q3 { color: #4aa3ff; } .q4 { color: #c27bff; } .q5 { color: #ff9a3c; } }
+  .past ol { margin: 6px 0 0; padding-left: 20px; }
+  .entry h2 { margin: 0; font-size: 1.25rem; font-weight: normal; }
+  .entry .date { color: var(--soft); font-size: .9rem; margin-left: 8px; }
+  .quest { font-size: 1.1rem; margin: 2px 0 6px; font-style: italic; }
+  .facts { color: var(--soft); font-size: .92rem; }
+  .facts b { color: var(--ink); font-weight: normal; }
+  .broken { color: var(--bad); margin-top: 6px; }
+  .open { color: var(--soft); font-style: italic; }
+  .entry img { width: 200px; max-width: 32vw; border: 1px solid var(--line); display: block; }
+  .levels { margin-top: 32px; }
+  .levels table { border-collapse: collapse; width: 100%; background: var(--page); border: 1px solid var(--line); }
+  .levels td, .levels th { padding: 6px 12px; border-bottom: 1px solid var(--line); text-align: left; font-weight: normal; }
+  .levels th { color: var(--soft); font-size: .85rem; }
+  @media (max-width: 560px) { .entry { grid-template-columns: 1fr; } .entry img { width: 100%; max-width: none; } }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script src="data.js"></script>
+<script>
+const D = window.DAYBOOK, app = document.getElementById('app');
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const played = s => {
+  if (s == null) return '?';
+  const d = Math.floor(s / 86400), h = Math.floor(s / 3600) % 24, m = Math.floor(s / 60) % 60, sec = s % 60;
+  return d ? `${d}d ${h}h ${m}m` : h ? `${h}h ${m}m` : `${m}m ${String(sec).padStart(2, '0')}s`;
+};
+const coin = c => { const s = c < 0 ? '-' : '+', a = Math.abs(c), g = Math.floor(a / 10000), sv = Math.floor(a / 100) % 100, cp = a % 100;
+  return s + (g ? `${g}g ${sv}s ${cp}c` : sv ? `${sv}s ${cp}c` : `${cp}c`); };
+const day = t => t ? new Date(t * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+if (!D) {
+  app.innerHTML = '<h1>One quest a day</h1><p class="sub">No days yet. Run <code>python relay.py</code>, then log in, turn in a quest and log out.</p>';
+} else {
+  document.title = `${D.char}: one quest a day`;
+  const stat = (v, label) => `<div class="stat"><b>${v}</b><span>${label}</span></div>`;
+  const entry = d => {
+    const lv = d.levelEnd && d.levelEnd !== d.levelStart ? `level ${d.levelStart} → ${d.levelEnd}` : `level ${d.levelStart ?? '?'}`;
+    const body = d.quest
+      ? `<p class="quest">${esc(d.quest)}</p>
+         <div class="facts"><b>${played(d.toTurnIn)}</b> played to the turn-in
+           ${d.linger != null ? ` · lingered <b>${played(d.linger)}</b>` : ''}
+           · <b>+${(d.xp || 0).toLocaleString()}</b> xp${d.xpOther ? ` (+${d.xpOther.toLocaleString()} from free play)` : ''} · ${lv}
+           ${d.money ? ` · <b>${coin(d.money)}</b>` : ''}</div>
+         ${d.best ? `<div class="facts">Best find: <span class="q${d.best[1]}">[${esc(d.best[0])}]</span></div>` : ''}
+         ${d.milestones.length ? `<div class="miles">${d.milestones.map(m => `<span>★ ${esc(m[2])}</span>`).join('')}</div>` : ''}
+         ${d.extra.length ? `<div class="broken">Broken: also turned in ${d.extra.map(e => esc(e[1])).join(', ')}</div>` : ''}`
+      : `<p class="open">No quest yet${d.resumed ? `, resumed ${d.resumed}×` : ''}. ${played(d.length)} played so far.</p>`;
+    const shot = d.cleanPic || d.pic; // the clean turn-in shot when there is one, else the one with the card
+    const pic = shot ? `<a href="pages/${esc(shot)}.webp"><img src="pages/${esc(shot)}-plate.webp" alt="Day ${d.n} turn-in" loading="lazy"></a>` : '';
+    return `<article class="entry"><div><h2>Day ${d.n}<span class="date">${day(d.date)}</span></h2>${body}</div>${pic}</article>`;
+  };
+  const tracked = D.days.filter(d => !d.past), past = D.days.filter(d => d.past);
+  const before = past.length ? `<article class="entry past"><div><h2>Days 1–${past.length}<span class="date">before the log</span></h2>
+    Done before tracking began, so there's no /played for these.
+    <ol>${past.map(d => `<li>${esc(d.quest)} <span class="date">level ${d.levelStart ?? '?'}${d.classQuest ? ' · class quest' : ''}</span></li>`).join('')}</ol></div></article>` : '';
+  const pastClass = past.filter(d => d.classQuest).map(d => [d.n, null, 'class', `Class quest: ${d.quest}`]);
+  const allMiles = [...pastClass, ...D.milestones];
+  const miles = allMiles.length ? `<section class="milestones"><h2>Milestones</h2><ul>${allMiles.map(m =>
+    `<li><span class="date">Day ${m[0]}</span> ${esc(m[3])}</li>`).join('')}</ul></section>` : '';
+  app.innerHTML = `
+    <h1>${esc(D.char)}</h1>
+    <p class="sub">Level ${D.level ?? '?'}. One quest a day: log in, turn in one quest, log out. Time is /played.</p>
+    <section class="totals">
+      ${stat(D.dayCount, 'days')}
+      ${stat(D.quests, 'quests turned in')}
+      ${stat(played(D.played), 'total /played')}
+      ${stat(played(D.avgToTurnIn), 'average to a turn-in')}
+      ${stat(played(D.fastest), 'fastest turn-in')}
+      ${stat(D.xpPerHour != null ? D.xpPerHour.toLocaleString() : '?', 'xp per played hour')}
+      ${stat(D.broken ? `<span style="color:var(--bad)">${D.broken} broken</span>` : `${D.streak} clean`, D.broken ? 'days with a second turn-in' : 'days in a row')}
+    </section>
+    ${miles}
+    ${tracked.slice().reverse().map(entry).join('')}
+    ${before}
+    ${D.perLevel.length ? `<section class="levels"><h2 style="font-weight:normal">/played per level</h2><table>
+      <tr><th>Level</th><th>/played</th></tr>
+      ${D.perLevel.map(([lv, s]) => `<tr><td>${lv}</td><td>${played(s)}</td></tr>`).join('')}</table></section>` : ''}`;
+}
+</script>
+</body>
+</html>
