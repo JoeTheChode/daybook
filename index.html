@@ -70,8 +70,8 @@ const coin = c => { const s = c < 0 ? '-' : '+', a = Math.abs(c), g = Math.floor
   return s + (g ? `${g}g ${sv}s ${cp}c` : sv ? `${sv}s ${cp}c` : `${cp}c`); };
 const day = t => t ? new Date(t * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
 
-if (!D) {
-  app.innerHTML = '<h1>One quest a day</h1><p class="sub">No days yet. Run <code>python relay.py</code>, then log in, turn in a quest and log out.</p>';
+if (!D || !D.dayCount) {
+  app.innerHTML = `<h1>${esc(D ? D.char : 'One quest a day')}</h1><p class="sub">One quest a day: log in, turn in one quest, log out. Day 1 is coming.</p>`;
 } else {
   document.title = `${D.char}: one quest a day`;
   const stat = (v, label) => `<div class="stat"><b>${v}</b><span>${label}</span></div>`;
