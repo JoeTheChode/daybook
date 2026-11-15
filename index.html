@@ -82,7 +82,8 @@ if (!D || !D.dayCount) {
          <div class="facts"><b>${played(d.toTurnIn)}</b> played to the turn-in
            ${d.linger != null ? ` · lingered <b>${played(d.linger)}</b>` : ''}
            · <b>+${(d.xp || 0).toLocaleString()}</b> xp${d.xpOther ? ` (+${d.xpOther.toLocaleString()} from free play)` : ''} · ${lv}
-           ${d.money ? ` · <b>${coin(d.money)}</b>` : ''}</div>
+           ${d.money ? ` · <b>${coin(d.money)}</b>` : ''}
+           ${d.deaths ? ` · <b>${d.deaths}</b> death${d.deaths > 1 ? 's' : ''}` : ''}</div>
          ${d.best ? `<div class="facts">Best find: <span class="q${d.best[1]}">[${esc(d.best[0])}]</span></div>` : ''}
          ${d.milestones.length ? `<div class="miles">${d.milestones.map(m => `<span>★ ${esc(m[2])}</span>`).join('')}</div>` : ''}
          ${d.extra.length ? `<div class="broken">Broken: also turned in ${d.extra.map(e => esc(e[1])).join(', ')}</div>` : ''}`
