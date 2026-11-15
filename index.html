@@ -47,6 +47,16 @@
   .facts b { color: var(--ink); font-weight: normal; }
   .broken { color: var(--bad); margin-top: 6px; }
   .open { color: var(--soft); font-style: italic; }
+  /* the day's route: a dotted trail on parchment, the turn-in a red X, a dagger where you died */
+  .routes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  .route { margin: 0; width: 260px; max-width: 100%; }
+  .route svg { display: block; width: 100%; aspect-ratio: 3 / 2; background: var(--paper); border: 1px solid var(--line); }
+  .route polyline { fill: none; stroke: var(--soft); stroke-width: 2.5; stroke-dasharray: 1 5; stroke-linecap: round;
+                    vector-effect: non-scaling-stroke; }
+  .route circle { fill: var(--soft); }
+  .route text { text-anchor: middle; dominant-baseline: central; font-family: Georgia, serif; }
+  .route .x { fill: var(--margin); } .route .dead { fill: var(--bad); font-weight: bold; }
+  .route figcaption { color: var(--soft); font-size: .85rem; }
   .entry img { width: 200px; max-width: 32vw; border: 1px solid var(--line); display: block; }
   .levels { margin-top: 32px; }
   .levels table { border-collapse: collapse; width: 100%; background: var(--page); border: 1px solid var(--line); }
@@ -68,7 +78,23 @@ const played = s => {
 };
 const coin = c => { const s = c < 0 ? '-' : '+', a = Math.abs(c), g = Math.floor(a / 10000), sv = Math.floor(a / 100) % 100, cp = a % 100;
   return s + (g ? `${g}g ${sv}s ${cp}c` : sv ? `${sv}s ${cp}c` : `${cp}c`); };
-const day = t => t ? new Date(t * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+// One zone of a day's route as a small map: [zone, [[x, y, ...] per stretch], [[x, y] deaths], [x, y] turn-in].
+// x and y are thousandths of the zone map (3:2), so y is squashed by 2/3; the view zooms to where you went.
+const routeMap = ([zone, segs, deaths, turnin]) => {
+  const Y = y => y * 2 / 3, all = segs.flat(), xs = all.filter((_, i) => i % 2 === 0), ys = all.filter((_, i) => i % 2).map(Y);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  let w = Math.max(x1 - x0, 60) * 1.3, h = Math.max(y1 - y0, 40) * 1.3;
+  if (w / h > 1.5) h = w / 1.5; else w = h * 1.5;
+  const vb = [(x0 + x1 - w) / 2, (y0 + y1 - h) / 2, w, h].map(v => v.toFixed(1)).join(' '), fs = (w / 12).toFixed(1);
+  const pts = s => s.map((v, i) => i % 2 ? Y(v).toFixed(1) + ' ' : v + ',').join('');
+  const mark = ([x, y], ch, cls) => `<text x="${x}" y="${Y(y).toFixed(1)}" font-size="${fs}" class="${cls}">${ch}</text>`;
+  const [sx, sy] = segs[0];
+  return `<figure class="route"><svg viewBox="${vb}" role="img" aria-label="Route in ${esc(zone)}">
+    ${segs.map(s => `<polyline points="${pts(s)}"/>`).join('')}<circle cx="${sx}" cy="${Y(sy).toFixed(1)}" r="${(w / 90).toFixed(1)}"/>
+    ${deaths.map(p => mark(p, '†', 'dead')).join('')}${turnin ? mark(turnin, '✕', 'x') : ''}</svg>
+    <figcaption>${esc(zone)}</figcaption></figure>`;
+};
+const day = t => t ?new Date(t * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
 
 if (!D || !D.dayCount) {
   app.innerHTML = `<h1>${esc(D ? D.char : 'One quest a day')}</h1><p class="sub">One quest a day: log in, turn in one quest, log out. Day 1 is coming.</p>`;
@@ -86,6 +112,7 @@ if (!D || !D.dayCount) {
            ${d.deaths ? ` · <b>${d.deaths}</b> death${d.deaths > 1 ? 's' : ''}` : ''}</div>
          ${d.best ? `<div class="facts">Best find: <span class="q${d.best[1]}">[${esc(d.best[0])}]</span></div>` : ''}
          ${d.milestones.length ? `<div class="miles">${d.milestones.map(m => `<span>★ ${esc(m[2])}</span>`).join('')}</div>` : ''}
+         ${d.route && d.route.length ? `<div class="routes">${d.route.map(routeMap).join('')}</div>` : ''}
          ${d.extra.length ? `<div class="broken">Broken: also turned in ${d.extra.map(e => esc(e[1])).join(', ')}</div>` : ''}`
       : `<p class="open">No quest yet${d.resumed ? `, resumed ${d.resumed}×` : ''}. ${played(d.length)} played so far.</p>`;
     const shot = d.cleanPic || d.pic; // the clean turn-in shot when there is one, else the one with the card
