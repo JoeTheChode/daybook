@@ -7,7 +7,7 @@
 <style>
   /* An old map: parchment, brown ink, a red X. */
   :root {
-    --paper: #e9dcbc; --page: #f3e8cc; --ink: #3f2a12; --soft: #7a5f3c; --rule: #d9c69c; --margin: #9b2c1c;
+    --paper: #e9dcbc; --page: #f3e8cc; --ink: #3f2a12; --soft: #6f5535; --rule: #d9c69c; --margin: #9b2c1c;
     --bad: #9b2c1c; --good: #3d6b2f; --line: #b99a66;
   }
   @media (prefers-color-scheme: dark) {
@@ -15,38 +15,48 @@
             --bad: #ff8f75; --good: #9fcf86; --line: #5a4a30; }
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.5 Georgia, "Times New Roman", serif; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 Georgia, "Times New Roman", serif; }
   main { max-width: 820px; margin: 0 auto; padding: 32px 16px 64px; }
-  h1 { font-size: 2.4rem; margin: 0; font-weight: normal; }
-  .sub { color: var(--soft); margin: 4px 0 24px; }
-  .totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 32px; }
-  .stat { background: var(--page); border: 1px solid var(--line); padding: 12px 14px; }
-  .stat b { display: block; font-size: 1.35rem; font-weight: normal; }
-  .stat span { color: var(--soft); font-size: .85rem; }
-  .entry { position: relative; background: var(--page); border: 1px solid var(--line); margin-bottom: 16px;
-           padding: 16px 16px 16px 44px; display: grid; grid-template-columns: 1fr auto; gap: 16px;
-           box-shadow: inset 0 0 0 4px var(--page), inset 0 0 0 5px var(--rule); }
-  /* the trail: a dotted line down the left edge, an X at each day */
-  .entry::before { content: ""; position: absolute; left: 24px; top: 0; bottom: 0; border-left: 2px dotted var(--soft); opacity: .6; }
-  .entry::after { content: "✕"; position: absolute; left: 17px; top: 16px; color: var(--margin); font-size: 1rem; line-height: 1; }
-  .past { color: var(--soft); }
-  .miles { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+  a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 2px; }
+  a:hover { text-decoration-color: var(--margin); }
+  h1 { font-size: 2.4rem; margin: 0; font-weight: normal; line-height: 1.15; }
+  h2 { font-weight: normal; font-size: 1.3rem; margin: 0 0 8px; }
+  .soft, .sub { color: var(--soft); }
+  .bad { color: var(--bad); }
+
+  /* masthead */
+  .mast { display: flex; gap: 14px; align-items: center; }
+  .mast svg { flex: none; width: 44px; height: 44px; }
+  .sub { margin: 6px 0 2px; }
+  .status { margin: 0 0 28px; font-variant: small-caps; letter-spacing: .03em; color: var(--soft); }
+
+  /* a page of the book */
+  .chapter { position: relative; background: var(--page); border: 1px solid var(--line); padding: 18px 20px 14px; margin-bottom: 18px;
+             box-shadow: inset 0 0 0 4px var(--page), inset 0 0 0 5px var(--rule); }
+  .chapter::after { content: ""; display: table; clear: both; }
+  .meta { margin: 0; color: var(--soft); font-variant: small-caps; letter-spacing: .04em; font-size: .9rem; }
+  .chapter h3 { margin: 2px 0 2px; font-size: 1.4rem; font-weight: normal; }
+  .inwhich, .prev, .stub { color: var(--soft); font-style: italic; margin: 0 0 10px; }
+  .story { margin: 8px 0; }
+  .story::first-letter { float: left; font-size: 3em; line-height: .8; padding: 4px 6px 0 0; color: var(--margin); }
+  .refrain { text-align: right; font-style: italic; font-size: .95rem; margin: 10px 0 0; clear: both; }
+  .broken { color: var(--bad); margin: 6px 0; }
+  .plate { float: right; margin: 4px 0 8px 16px; }
+  .plate img { width: 200px; display: block; border: 1px solid var(--line); }
+  .miles { margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px; }
   .miles span { color: var(--margin); border: 1px solid var(--line); padding: 1px 8px; font-size: .88rem; }
-  .milestones { background: var(--page); border: 1px solid var(--line); padding: 12px 16px; margin-bottom: 24px; }
-  .milestones h2 { margin: 0 0 6px; font-size: 1.15rem; font-weight: normal; }
-  .milestones ul { margin: 0; padding-left: 18px; }
-  .milestones li { margin: 2px 0; }
   /* item quality colours, darkened to read on parchment */
-  .q0 { color: #6f6f6f; } .q1 { color: var(--ink); } .q2 { color: #1d7a0c; } .q3 { color: #0b5fb8; } .q4 { color: #7d2bbf; } .q5 { color: #b35a00; }
-  @media (prefers-color-scheme: dark) { .q2 { color: #4fe03a; } .q3 { color: #4aa3ff; } .q4 { color: #c27bff; } .q5 { color: #ff9a3c; } }
-  .past ol { margin: 6px 0 0; padding-left: 20px; }
-  .entry h2 { margin: 0; font-size: 1.25rem; font-weight: normal; }
-  .entry .date { color: var(--soft); font-size: .9rem; margin-left: 8px; }
-  .quest { font-size: 1.1rem; margin: 2px 0 6px; font-style: italic; }
-  .facts { color: var(--soft); font-size: .92rem; }
-  .facts b { color: var(--ink); font-weight: normal; }
-  .broken { color: var(--bad); margin-top: 6px; }
-  .open { color: var(--soft); font-style: italic; }
+  .q0 { color: #6f6f6f; } .q1 { color: var(--ink); } .q2 { color: #1a700b; } .q3 { color: #0b5fb8; } .q4 { color: #7d2bbf; } .q5 { color: #9a4c00; }
+  @media (prefers-color-scheme: dark) { .q0 { color: #a8a8a8; } .q2 { color: #4fe03a; } .q3 { color: #4aa3ff; } .q4 { color: #c27bff; } .q5 { color: #ff9a3c; } }
+  [id^=day-] { scroll-margin-top: 12px; }
+  .chapter:target, li:target { box-shadow: 0 0 0 2px var(--margin); }
+
+  /* the newest page, at the top */
+  .hook { padding-top: 22px; margin-bottom: 28px; }
+  .kicker { font-size: 1.6rem; font-style: italic; font-weight: normal; margin: 0 0 2px; line-height: 1.2; }
+  .hook .shot { display: block; margin: 10px 0; }
+  .hook .shot img { width: 100%; height: auto; display: block; border: 1px solid var(--line); }
+
   /* the day's route: a dotted trail on parchment, the turn-in a red X, a dagger where you died */
   .routes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
   .route { margin: 0; width: 260px; max-width: 100%; }
@@ -57,12 +67,64 @@
   .route text { text-anchor: middle; dominant-baseline: central; font-family: Georgia, serif; }
   .route .x { fill: var(--margin); } .route .dead { fill: var(--bad); font-weight: bold; }
   .route figcaption { color: var(--soft); font-size: .85rem; }
-  .entry img { width: 200px; max-width: 32vw; border: 1px solid var(--line); display: block; }
-  .levels { margin-top: 32px; }
+
+  /* the trail so far: one step per day, an X for the newest */
+  .trail { margin-bottom: 32px; }
+  .steps { display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
+  .steps a { width: 22px; height: 22px; display: grid; place-items: center; text-decoration: none; color: var(--soft); }
+  .steps a::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+  .steps .past::before { background: none; border: 1.5px solid currentColor; opacity: .75; }
+  .steps .bad { color: var(--bad); }
+  .steps .star::before, .steps .now::before { content: "★"; width: auto; height: auto; background: none; border: 0; border-radius: 0;
+                                                color: var(--margin); line-height: 1; }
+  .steps .now::before { content: "✕"; font-size: 1.2em; }
+  .steps a:focus-visible, summary:focus-visible { outline: 2px solid var(--margin); outline-offset: 2px; }
+  .act-tick { font-variant: small-caps; color: var(--soft); font-size: .85rem; margin: 0 4px 0 8px; }
+  .act-tick:first-child { margin-left: 0; }
+
+  /* the book: prologue and acts */
+  details { margin-bottom: 18px; }
+  summary { list-style: none; cursor: pointer; text-align: center; padding: 18px 0 12px; }
+  summary::-webkit-details-marker { display: none; }
+  summary .act { display: block; color: var(--soft); font-variant: small-caps; letter-spacing: .2em; font-size: .9rem; }
+  summary .name { font-size: 1.6rem; display: inline; margin: 0; }
+  summary .name::before { content: "▸ " / ""; color: var(--soft); font-size: .8em; }
+  details[open] > summary .name::before { content: "▾ " / ""; }
+  summary .span { display: block; color: var(--soft); font-size: .9rem; }
+  summary::after { content: "✦ ─── ✦" / ""; display: block; color: var(--line); margin-top: 6px; }
+  .chapters { border-left: 2px dotted var(--soft); margin-left: 10px; padding-left: 22px; }
+  .chapters > .chapter::before { content: ""; position: absolute; left: -29px; top: 24px; width: 10px; height: 10px;
+                                 border-radius: 50%; background: var(--soft); }
+  .chapters > .chapter.broke::before { background: var(--bad); }
+  .chapters > .chapter.star::before { content: "★"; background: none; width: auto; height: auto; left: -31px; top: 17px; color: var(--margin); }
+  .chapters > .stub { margin: 0 0 18px; }
+  .prologue ol { margin: 10px 0 0; padding-left: 0; list-style: none; }
+  .prologue li { margin: 0 0 10px; }
+  .prologue li .soft { font-size: .92rem; }
+
+  /* the ledger */
+  .ledger { margin-top: 40px; }
+  .totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat { background: var(--page); border: 1px solid var(--line); padding: 12px 14px; }
+  .stat b { display: block; font-size: 1.35rem; font-weight: normal; }
+  .stat span { color: var(--soft); font-size: .85rem; }
+  .milestones { background: var(--page); border: 1px solid var(--line); padding: 12px 16px; margin-bottom: 24px; }
+  .milestones h3 { margin: 0 0 6px; font-size: 1.15rem; font-weight: normal; }
+  .milestones ul { margin: 0; padding-left: 18px; }
+  .milestones li { margin: 2px 0; }
+  .date { color: var(--soft); font-size: .9rem; margin-right: 6px; }
   .levels table { border-collapse: collapse; width: 100%; background: var(--page); border: 1px solid var(--line); }
   .levels td, .levels th { padding: 6px 12px; border-bottom: 1px solid var(--line); text-align: left; font-weight: normal; }
   .levels th { color: var(--soft); font-size: .85rem; }
-  @media (max-width: 560px) { .entry { grid-template-columns: 1fr; } .entry img { width: 100%; max-width: none; } }
+  .levels h3 { font-weight: normal; }
+  footer { margin-top: 32px; text-align: center; }
+
+  @media (max-width: 560px) {
+    .plate { float: none; margin: 8px 0; } .plate img { width: 100%; }
+    h1 { font-size: 1.9rem; } .chapter { padding: 16px 14px 12px; }
+  }
+  @media (max-width: 400px) { .chapters { padding-left: 16px; } .chapters > .chapter::before { left: -23px; }
+                              .chapters > .chapter.star::before { left: -25px; } }
 </style>
 </head>
 <body>
@@ -94,57 +156,197 @@ const routeMap = ([zone, segs, deaths, turnin]) => {
     ${deaths.map(p => mark(p, '†', 'dead')).join('')}${turnin ? mark(turnin, '✕', 'x') : ''}</svg>
     <figcaption>${esc(zone)}</figcaption></figure>`;
 };
-const day = t => t ?new Date(t * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+const day = t => t ? new Date(t * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+// Story helpers. Every sentence comes from one real field and is dropped when that field is missing.
+const s = k => k === 1 ? '' : 's';
+const list = a => a.length < 2 ? (a[0] ?? '') : a.slice(0, -1).join(', ') + ' and ' + a.at(-1);
+const times = k => ['', 'once', 'twice', 'three times'][k] || `${k} times`;
+const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+const word = k => WORDS[k] ?? String(k), Word = k => { const w = word(k); return w[0].toUpperCase() + w.slice(1); };
+const roman = n => [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'],
+  [5, 'V'], [4, 'IV'], [1, 'I']].reduce((out, [v, r]) => { while (n >= v) { out += r; n -= v; } return out; }, '');
+const purse = c => coin(c).slice(1).replace(/ 0[sc]/g, ''); // "24s", not "+24s 0c"
+// QuestieDB keeps the game's placeholders: <Name> is the reader, <brother/sister> a choice the game makes per reader.
+const quote = t => `“${esc(String(t).replace(/<name>/gi, D.char).replace(/<([^<>\/]+)\/([^<>]+)>/g, '$1/$2'))}”`;
+const shotOf = d => d.cleanPic || d.pic; // the clean turn-in shot when there is one, else the one with the card
+const COMPASS = `<svg viewBox="-20 -20 40 40" aria-hidden="true">
+  <path d="M0-14L3-3L14 0L3 3L0 14L-3 3L-14 0L-3-3Z" fill="var(--soft)" transform="rotate(45) scale(.7)"/>
+  <path d="M0-17L3.5-3.5L17 0L3.5 3.5L0 17L-3.5 3.5L-17 0L-3.5-3.5Z" fill="var(--line)" stroke="var(--soft)" stroke-width=".8"/>
+  <path d="M0-17L3.5-3.5L-3.5-3.5Z" fill="var(--margin)"/><circle r="2" fill="var(--page)" stroke="var(--soft)" stroke-width=".8"/>
+</svg>`;
 
 if (!D || !D.dayCount) {
   app.innerHTML = `<h1>${esc(D ? D.char : 'One quest a day')}</h1><p class="sub">One quest a day: log in, turn in one quest, log out. Day 1 is coming.</p>`;
 } else {
-  document.title = `${D.char}: one quest a day`;
-  const stat = (v, label) => `<div class="stat"><b>${v}</b><span>${label}</span></div>`;
-  const entry = d => {
-    const lv = d.levelEnd && d.levelEnd !== d.levelStart ? `level ${d.levelStart} → ${d.levelEnd}` : `level ${d.levelStart ?? '?'}`;
-    const body = d.quest
-      ? `<p class="quest">${esc(d.quest)}</p>
-         <div class="facts"><b>${played(d.toTurnIn)}</b> played to the turn-in
-           ${d.linger != null ? ` · lingered <b>${played(d.linger)}</b>` : ''}
-           · <b>+${(d.xp || 0).toLocaleString()}</b> xp${d.xpOther ? ` (+${d.xpOther.toLocaleString()} from free play)` : ''} · ${lv}
-           ${d.money ? ` · <b>${coin(d.money)}</b>` : ''}
-           ${d.deaths ? ` · <b>${d.deaths}</b> death${d.deaths > 1 ? 's' : ''}` : ''}</div>
-         ${d.best ? `<div class="facts">Best find: <span class="q${d.best[1]}">[${esc(d.best[0])}]</span></div>` : ''}
-         ${d.milestones.length ? `<div class="miles">${d.milestones.map(m => `<span>★ ${esc(m[2])}</span>`).join('')}</div>` : ''}
-         ${d.route && d.route.length ? `<div class="routes">${d.route.map(routeMap).join('')}</div>` : ''}
-         ${d.extra.length ? `<div class="broken">Broken: also turned in ${d.extra.map(e => esc(e[1])).join(', ')}</div>` : ''}`
-      : `<p class="open">No quest yet${d.resumed ? `, resumed ${d.resumed}×` : ''}. ${played(d.length)} played so far.</p>`;
-    const shot = d.cleanPic || d.pic; // the clean turn-in shot when there is one, else the one with the card
-    const pic = shot ? `<a href="pages/${esc(shot)}.webp"><img src="pages/${esc(shot)}-plate.webp" alt="Day ${d.n} turn-in" loading="lazy"></a>` : '';
-    return `<article class="entry"><div><h2>Day ${d.n}<span class="date">${day(d.date)}</span></h2>${body}</div>${pic}</article>`;
+  const C = esc(D.char), days = D.days, latest = days.at(-1), N = latest.n;
+  const tracked = days.filter(d => !d.past), past = days.filter(d => d.past);
+  const isStar = d => d.classQuest || (d.milestones && d.milestones.length);
+  document.title = `The Daybook · Day ${N}: ${latest.quest || 'an open day'}`;
+
+  // Acts: a run of days whose quests were turned in in the same zone. Only the newest act grows.
+  const zoneOf = d => d.zone || (d.route && d.route.length ? d.route.at(-1)[0] : null) || null;
+  const acts = [], actOf = {};
+  for (const d of tracked) {
+    const z = zoneOf(d), cur = acts.at(-1);
+    if (!cur || (z && cur.zone && z !== cur.zone)) {
+      const back = z && acts.some(a => a.zone === z);
+      acts.push({ zone: z, name: z ? (back ? `Back in ${esc(z)}` : esc(z)) : 'Parts unrecorded', days: [] });
+    } else if (z && !cur.zone) { cur.zone = z; cur.name = esc(z); }
+    acts.at(-1).days.push(d); actOf[d.n] = acts.length;
+  }
+
+  // The In-which line: the first rule that fires. Paces compare with earlier days only, so a published line never changes.
+  const inWhich = {};
+  let rec = null, sum = 0, paced = 0;
+  for (const d of tracked) {
+    const m = kind => (d.milestones || []).find(x => x[1] === kind), avg = paced ? sum / paced : null, t = d.toTurnIn;
+    const lv = m('level'), mount = m('mount'), deaths = d.deaths || 0;
+    inWhich[d.n] = !d.quest ? ''
+      : d.extra.length ? `In which ${C} breaks the rule.`
+      : mount ? (mount[2] === 'First ride' ? `In which ${C} rides for the first time.` : `In which ${C} learns to ride.`)
+      : lv && /\d+/.test(lv[2]) ? `In which ${C} reaches level ${lv[2].match(/\d+/)[0]}.`
+      : d.classQuest ? `In which ${C} sees to class business.`
+      : deaths >= 2 ? `In which ${C} dies ${times(deaths)}.` // deaths count the whole day, not just the way to the turn-in
+      : deaths === 1 ? `In which ${C} dies, briefly.`
+      : d.acceptedDay != null && d.n - d.acceptedDay >= 2 ? 'In which an old errand is finally done.'
+      : t != null && rec != null && t < rec ? `In which ${C} sets a new pace.`
+      : t != null && paced >= 3 && t > 2 * avg ? 'In which it takes a while.'
+      : d.n === D.pastCount + 1 ? 'In which the log begins.' : '';
+    if (t != null) { rec = rec == null ? t : Math.min(rec, t); sum += t; paced++; }
+  }
+
+  const routes = d => d.route && d.route.length ? `<div class="routes">${d.route.map(routeMap).join('')}</div>` : '';
+  const chips = d => d.milestones && d.milestones.length ? `<div class="miles">${d.milestones.map(m => `<span>★ ${esc(m[2])}</span>`).join('')}</div>` : '';
+  const plate = d => shotOf(d) ? `<a class="plate" href="pages/${esc(shotOf(d))}.webp"><img src="pages/${esc(shotOf(d))}-plate.webp" alt="Day ${d.n}: the turn-in" loading="lazy"></a>` : '';
+  const shot = d => shotOf(d) ? `<a class="shot" href="pages/${esc(shotOf(d))}.webp"><img src="pages/${esc(shotOf(d))}.webp" alt="Day ${d.n}: the turn-in"></a>` : '';
+
+  // The story of one tracked day.
+  const story = d => {
+    if (!d.quest) return `No quest was turned in${d.length != null ? ` in ${played(d.length)} played${d.resumed ? `, over ${d.resumed + 1} sittings` : ''}` : ''}.`;
+    const zones = [...new Set((d.route || []).map(r => r[0]).filter(Boolean))].map(esc), deaths = d.deaths || 0;
+    const up = d.levelEnd != null && d.levelStart != null && d.levelEnd > d.levelStart;
+    const marks = (d.route || []).reduce((t, r) => t + r[2].length, 0); // a death in an instance has no place on the map
+    return [
+      zones.length >= 2 ? `The road ran through ${list(zones)}.` : zones.length ? `The day was spent in ${zones[0]}.` : d.zone ? `The day’s business was in ${esc(d.zone)}.` : '',
+      d.objective ? `The quest log asked: ${quote(d.objective)}` : '',
+      d.acceptedDay === d.n ? 'It was taken up that same day.'
+        : d.acceptedDay != null && d.acceptedDay < d.n ? `It had been carried since <a href="#day-${d.acceptedDay}">Day ${d.acceptedDay}</a>.`
+        : d.acceptedDay == null && d.acceptToTurnIn != null && d.toTurnIn != null && d.acceptToTurnIn > d.toTurnIn ? 'It had been carried from an earlier day.' : '',
+      d.ticks && d.ticks.length ? `By the turn-in: ${d.ticks.map(([l, h, w]) => `${esc(l)}, ${h} of ${w}`).join('; ')}.` : '',
+      `${d.toTurnIn != null ? `After ${played(d.toTurnIn)}, ` : ''}${C} turned it in${d.xp > 0 ? ` for ${d.xp.toLocaleString()} xp` : ''}.`,
+      d.xpOther > 0 ? `Free play added ${d.xpOther.toLocaleString()} xp more.` : '',
+      deaths ? `${Word(deaths)} death${s(deaths)} that day${marks === deaths ? (deaths === 1 ? ' (the † on the map)' : ' (each † on the map)') : ''}.` : '',
+      up ? `Over the day, level ${d.levelStart} became ${d.levelEnd}.` : '',
+      d.best ? `The best find was <span class="q${d.best[1] | 0}">[${esc(d.best[0])}]</span>.` : '',
+      d.money ? `The purse ended the day ${purse(d.money)} ${d.money > 0 ? 'up' : 'down'}.` : '',
+      d.linger >= 60 ? `The day ran ${played(d.linger)} past the turn-in.` : '',
+    ].filter(Boolean).join(' ');
   };
-  const tracked = D.days.filter(d => !d.past), past = D.days.filter(d => d.past);
-  const before = past.length ? `<article class="entry past"><div><h2>Days 1–${past.length}<span class="date">before the log</span></h2>
-    Done before tracking began, so there's no /played for these.
-    <ol>${past.map(d => `<li>${esc(d.quest)} <span class="date">level ${d.levelStart ?? '?'}${d.classQuest ? ' · class quest' : ''}</span></li>`).join('')}</ol></div></article>` : '';
+
+  const chapter = (d, hook) => {
+    const lv = d.levelEnd ?? d.levelStart;
+    const meta = [`Day ${d.n}`, day(d.date), lv != null ? `level ${lv}` : ''].filter(Boolean).join(' · ');
+    const extra = d.extra || [], cls = ['chapter', hook ? 'hook' : '', extra.length ? 'broke' : isStar(d) ? 'star' : ''].filter(Boolean).join(' ');
+    const prev = days.at(-2);
+    return `<article class="${cls}" id="day-${d.n}">
+      ${hook ? `<h2 class="kicker">Day ${d.n} of the journey</h2>
+        <p class="prev">${prev ? `Previously, Day ${prev.n}: <a href="#day-${prev.n}"><i>${esc(prev.quest || 'an open day')}</i></a>${prev.extra && prev.extra.length ? ', and the rule broke' : ''}${isStar(prev) ? ' ★' : ''}.` : 'The first day.'}</p>` : ''}
+      <p class="meta">${meta}</p>
+      <h3>${d.quest ? `<i>${esc(d.quest)}</i>` : 'An open day'}</h3>
+      ${inWhich[d.n] ? `<p class="inwhich">${inWhich[d.n]}</p>` : ''}
+      ${hook ? shot(d) : plate(d)}
+      <p class="story">${story(d)}</p>
+      ${routes(d)}${chips(d)}
+      ${extra.length ? `<p class="broken">Then ${C} turned in ${list(extra.map(e => `<i>${esc(e[1] || 'another quest')}</i>`))} as well, and the rule broke.</p>` : ''}
+      ${!d.quest ? '' : extra.length ? `<p class="refrain bad">${Word(1 + extra.length)} quests. The streak starts over.</p>` : `<p class="refrain">One quest. ${C} rests.</p>`}
+    </article>`;
+  };
+
+  // A day from before the log: its name and what the quest log asked; nothing more is known.
+  const kindOf = d => d.levelStart > 0 ? ` — a level-${d.levelStart} ${d.classQuest ? 'class quest' : 'quest'}` : d.classQuest ? ' — a class quest' : '';
+  const pastHook = d => {
+    const prev = days.at(-2), a = d.levelStart > 0 ? `A level-${d.levelStart} ${d.classQuest ? 'class quest' : 'quest'}` : d.classQuest ? 'A class quest' : 'A quest';
+    return `<article class="chapter hook" id="day-${d.n}">
+      <h2 class="kicker">Day ${d.n} of the journey</h2>
+      <p class="prev">${prev ? `Previously, Day ${prev.n}: <a href="#day-${prev.n}"><i>${esc(prev.quest)}</i></a>.` : 'The first day.'}</p>
+      <p class="meta">Day ${d.n} · before the log</p>
+      <h3><i>${esc(d.quest)}</i></h3>
+      <p class="story">${a}, from before the log.${d.objective ? ` The quest log asked: ${quote(d.objective)}` : ''}</p>
+      ${d.classQuest ? '<div class="miles"><span>★ Class quest</span></div>' : ''}
+    </article>`;
+  };
+
+  const stub = d => `<p class="stub"><a href="#day-${d.n}">Day ${d.n} · ${esc(d.quest || 'an open day')}</a>, the newest page, at the top ↑</p>`;
+
+  const prologue = past.length ? `<details class="prologue"${tracked.length ? '' : ' open'}>
+    <summary><span class="act">Prologue</span><h2 class="name">Before the log</h2><span class="span">Day${past.length > 1 ? `s 1–${past.length}` : ' 1'}</span></summary>
+    <div class="chapter">
+      <p class="story">${past.length === 1 ? 'This one quest came before the Daybook kept its log. Its name is known; its time, place and road are not.'
+        : `These ${word(past.length)} quests came before the Daybook kept its log. Their names are known; their time, place and road are not.`}</p>
+      <ol>${past.map(d => d === latest ? `<li>${stub(d)}</li>` : `<li id="day-${d.n}">Day ${d.n} · <i>${esc(d.quest)}</i>${kindOf(d)}.${d.objective ? `<br><span class="soft">${quote(d.objective)}</span>` : ''}</li>`).join('')}</ol>
+      ${tracked.length ? '<p class="refrain">Then the log began.</p>' : ''}
+    </div></details>` : '';
+
+  const actHtml = (a, k) => {
+    const f = a.days[0], l = a.days.at(-1), lo = f.levelStart, hi = l.levelEnd ?? l.levelStart;
+    const deaths = a.days.reduce((t, d) => t + (d.deaths || 0), 0), broken = a.days.filter(d => d.extra.length).length;
+    const span = [f === l ? `Day ${f.n}` : `Days ${f.n}–${l.n}`, lo != null && hi != null ? (lo === hi ? `level ${lo}` : `level ${lo} to ${hi}`) : '',
+      deaths ? `${deaths} death${s(deaths)}` : '', broken ? `${broken} broken` : ''].filter(Boolean).join(' · ');
+    return `<details class="act" id="act-${k + 1}"${k === acts.length - 1 ? ' open' : ''}>
+      <summary><span class="act">Act ${roman(k + 1)}</span><h2 class="name">${a.name}</h2><span class="span">${span}</span></summary>
+      <div class="chapters">${a.days.map(d => d === latest ? stub(d) : chapter(d)).join('')}</div></details>`;
+  };
+
+  const step = d => {
+    const cls = d === latest ? 'now' : d.past ? 'past' : d.extra.length ? 'bad' : isStar(d) ? 'star' : '';
+    const label = `Day ${d.n}: ${esc(d.quest || 'an open day')}`, a = acts[actOf[d.n] - 1];
+    const tick = a && a.days[0] === d ? `<span class="act-tick" title="${a.name}">${roman(actOf[d.n])}</span>` : '';
+    return `${tick}<a href="#day-${d.n}"${cls ? ` class="${cls}"` : ''} title="${label}" aria-label="${label}"></a>`;
+  };
+
+  const status = [`Day ${N}`, !latest.past && D.level != null ? `level ${D.level}` : '',
+    D.broken ? `<span class="bad">${D.broken} broken day${s(D.broken)}</span>, ${D.streak} clean since` : `${D.streak} clean day${s(D.streak)} in a row`,
+    D.played != null ? `${played(D.played)} /played` : ''].filter(Boolean).join(' · ');
+
+  const stat = (v, label) => `<div class="stat"><b>${v}</b><span>${label}</span></div>`;
   const pastClass = past.filter(d => d.classQuest).map(d => [d.n, null, 'class', `Class quest: ${d.quest}`]);
   const allMiles = [...pastClass, ...D.milestones];
-  const miles = allMiles.length ? `<section class="milestones"><h2>Milestones</h2><ul>${allMiles.map(m =>
-    `<li><span class="date">Day ${m[0]}</span> ${esc(m[3])}</li>`).join('')}</ul></section>` : '';
+
   app.innerHTML = `
-    <h1>${esc(D.char)}</h1>
-    <p class="sub">Level ${D.level ?? '?'}. One quest a day: log in, turn in one quest, log out. Time is /played.</p>
-    <section class="totals">
-      ${stat(D.dayCount, 'days')}
-      ${stat(D.quests, 'quests turned in')}
-      ${stat(played(D.played), 'total /played')}
-      ${stat(played(D.avgToTurnIn), 'average to a turn-in')}
-      ${stat(played(D.fastest), 'fastest turn-in')}
-      ${stat(D.xpPerHour != null ? D.xpPerHour.toLocaleString() : '?', 'xp per played hour')}
-      ${stat(D.broken ? `<span style="color:var(--bad)">${D.broken} broken</span>` : `${D.streak} clean`, D.broken ? 'days with a second turn-in' : 'days in a row')}
+    <header class="mast">${COMPASS}<h1>The Daybook of ${C}</h1></header>
+    <p class="sub">One quest a day: log in, turn in one quest, log out. Time is /played.</p>
+    <p class="status">${status}</p>
+    ${latest.past ? pastHook(latest) : chapter(latest, true)}
+    <section class="trail" aria-label="The trail so far"><h2>The trail so far</h2><div class="steps">${days.map(step).join('')}</div></section>
+    ${prologue}
+    ${acts.map(actHtml).join('')}
+    <section class="ledger"><h2>The ledger</h2>
+      <div class="totals">
+        ${stat(D.dayCount, 'days')}
+        ${stat(D.quests, 'quests turned in')}
+        ${stat(played(D.played), 'total /played')}
+        ${stat(played(D.avgToTurnIn), 'average to a turn-in')}
+        ${stat(played(D.fastest), 'fastest turn-in')}
+        ${stat(D.xpPerHour != null ? D.xpPerHour.toLocaleString() : '?', 'xp per played hour')}
+        ${stat(D.broken ? `<span class="bad">${D.broken} broken</span>` : `${D.streak} clean`, D.broken ? 'days with a second turn-in' : 'days in a row')}
+      </div>
+      ${allMiles.length ? `<div class="milestones"><h3>Milestones</h3><ul>${allMiles.map(m =>
+        `<li><a class="date" href="#day-${m[0]}">Day ${m[0]}</a> ${esc(m[3])}</li>`).join('')}</ul></div>` : ''}
+      ${D.perLevel.length ? `<div class="levels"><h3>/played per level</h3><table>
+        <tr><th>Level</th><th>/played</th></tr>
+        ${D.perLevel.map(([lv, t]) => `<tr><td>${lv}</td><td>${played(t)}</td></tr>`).join('')}</table></div>` : ''}
     </section>
-    ${miles}
-    ${tracked.slice().reverse().map(entry).join('')}
-    ${before}
-    ${D.perLevel.length ? `<section class="levels"><h2 style="font-weight:normal">/played per level</h2><table>
-      <tr><th>Level</th><th>/played</th></tr>
-      ${D.perLevel.map(([lv, s]) => `<tr><td>${lv}</td><td>${played(s)}</td></tr>`).join('')}</table></section>` : ''}`;
+    <footer class="soft">Last written ${day(D.updated)}.</footer>`;
+
+  // The page is drawn after the browser's own jump to #day-N, and the day may sit in a closed act: open it, then go.
+  const reveal = () => {
+    const t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (!t) return;
+    for (let e = t.closest('details'); e; e = e.parentElement && e.parentElement.closest('details')) e.open = true;
+    t.scrollIntoView();
+  };
+  reveal();
+  addEventListener('hashchange', reveal);
 }
 </script>
 </body>
